@@ -215,4 +215,37 @@ public class SanPhamDAO {
         
         return result;
     }
+    
+    public static List<SanPham> searchSanPham(String tensp){
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        List<SanPham> listSP = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            String sql = "SELECT sp.MaSanPham, sp.TenSanPham, dm.ID,dm.TenDanhMuc, sp.SoLuong, sp.DonGia, sp.NCC FROM SanPham as sp, DanhMuc as dm WHERE sp.DanhMuc = dm.ID AND TenSanPham like N'%"+ tensp +"%'";
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {                
+                listSP.add(new SanPham(rs.getString("MaSanPham"), rs.getString("TenSanPham"), rs.getInt("ID"), rs.getString("TenDanhMuc"), rs.getInt("SoLuong"), rs.getInt("DonGia"), rs.getString("NCC")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                    ps.close();
+                }
+                if(rs != null){
+                    rs.close();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        return listSP;
+    }
 }

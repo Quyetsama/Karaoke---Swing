@@ -1,4 +1,5 @@
 package karaoke;
+import BUS.DanhMucBUS;
 import BUS.SanPhamBUS;
 import DAO.DanhMucDAO;
 import DAO.SanPhamDAO;
@@ -10,20 +11,25 @@ import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class frmQLSP extends javax.swing.JPanel {
 
-    DanhMuc dmSelected = null;
+    static DanhMuc dmSelected = null;
     String mspSelected = "";
+    static int indexCBB = 0;
 
     public frmQLSP() {
         initComponents();
         txtMSP.setEnabled(false);
-        loadData();
+//        loadData();
         loadDanhMucToCBB();
         loadDanhMucToList();
         dmSelected = (DanhMuc)cbbDM.getModel().getSelectedItem();
+        
+        loadDataByDanhMuc();
     }
 
 
@@ -131,10 +137,25 @@ public class frmQLSP extends javax.swing.JPanel {
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Danh mục", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 11))); // NOI18N
 
         btnAddDM.setText("Thêm");
+        btnAddDM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddDMActionPerformed(evt);
+            }
+        });
 
         btnUpdateDM.setText("Sửa");
+        btnUpdateDM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateDMActionPerformed(evt);
+            }
+        });
 
         btnRemoveDM.setText("Xóa");
+        btnRemoveDM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveDMActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -206,6 +227,11 @@ public class frmQLSP extends javax.swing.JPanel {
         jLabel8.setText("Tìm kiếm");
 
         btnSearchSP.setText("Tìm kiếm");
+        btnSearchSP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchSPActionPerformed(evt);
+            }
+        });
 
         btnAddSP.setText("Thêm");
         btnAddSP.addActionListener(new java.awt.event.ActionListener() {
@@ -352,6 +378,8 @@ public class frmQLSP extends javax.swing.JPanel {
             if (cbbDM.getItemAt(i).toString ().contains (dm.toString())) 
             { 
                 cbbDM.setSelectedIndex(i);
+                
+                indexCBB = i;
                 break;
             }
             i++;
@@ -364,7 +392,10 @@ public class frmQLSP extends javax.swing.JPanel {
 
     private void listDMMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listDMMouseClicked
         dmSelected = listDM.getSelectedValue();
-        cbbDM.setSelectedIndex(listDM.getSelectedIndex());
+        
+        indexCBB = listDM.getSelectedIndex();
+        
+        cbbDM.setSelectedIndex(indexCBB);
         loadDataByDanhMuc();
     }//GEN-LAST:event_listDMMouseClicked
 
@@ -375,6 +406,7 @@ public class frmQLSP extends javax.swing.JPanel {
         txtGia.setText("");
         txtNCC.setText("");
         
+        indexCBB = 0;
         loadData();
         loadDanhMucToCBB();
         loadDanhMucToList();
@@ -514,6 +546,87 @@ public class frmQLSP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnRemoveSPActionPerformed
 
+    private void btnAddDMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddDMActionPerformed
+        new frmAddDanhMuc().setVisible(true);
+    }//GEN-LAST:event_btnAddDMActionPerformed
+
+    private void btnUpdateDMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateDMActionPerformed
+        DanhMuc dmUpdate = listDM.getSelectedValue();
+        if(dmUpdate != null){
+            new frmUpdateDanhMuc(dmUpdate).setVisible(true);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn một danh mục!");
+        }
+    }//GEN-LAST:event_btnUpdateDMActionPerformed
+
+    private void btnRemoveDMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveDMActionPerformed
+        DanhMuc dmDelete = listDM.getSelectedValue();
+        if(dmDelete != null){
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog (null, "Bạn có muốn xóa danh mục '"+ dmDelete.getTendm() +"' này không?","Cảnh báo",dialogButton);
+            if(dialogResult == JOptionPane.YES_OPTION){
+                if(DanhMucBUS.deleteDanhMuc(String.valueOf(dmDelete.getId()))){
+                    JOptionPane.showMessageDialog(null, "Xóa danh mục '"+ dmDelete.getTendm() +"' thành công!");
+                    
+                    txtMSP.setText("");
+                    txtTenSP.setText("");
+                    txtSL.setValue(0);
+                    txtGia.setText("");
+                    txtNCC.setText("");
+
+                    indexCBB = 0;
+                    
+                    loadDanhMucToList();
+                    loadDanhMucToCBB();
+                    loadDataByDanhMuc();
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Xảy ra lỗi!");
+                }
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn một danh mục cần xóa!");
+        }
+    }//GEN-LAST:event_btnRemoveDMActionPerformed
+
+    private void btnSearchSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchSPActionPerformed
+        try{
+            String tensp = txtSearchSP.getText();
+            if(!tensp.equals("")){
+                List<SanPham> listSP = SanPhamDAO.searchSanPham(tensp);
+                if(listSP.size() > 0){
+                    DefaultTableModel tblModel = (DefaultTableModel)tblSP.getModel();
+                    tblModel.setRowCount(0);
+
+                    for(SanPham sp : listSP){
+                        String msp = sp.getMsp();
+                        tensp = sp.getTensp();
+
+                        int iddm = sp.getIddm();
+                        String tendm = sp.getTendm();
+                        DanhMuc dm = new DanhMuc(iddm, tendm);
+
+                        String sl = String.valueOf(sp.getSl());
+                        String dongia = String.valueOf(sp.getDongia());
+                        String ncc = sp.getNcc();
+                        Object tbData[] = {msp, tensp, dm, sl, dongia, ncc};
+
+                        tblModel.addRow(tbData);
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy");
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Vui lòng nhập tên sản phẩm cần tìm");
+            }
+        }
+        catch(Exception e){}
+    }//GEN-LAST:event_btnSearchSPActionPerformed
+
     private void loadData(){
         DefaultTableModel tblModel = (DefaultTableModel)tblSP.getModel();
         tblModel.setRowCount(0);
@@ -535,7 +648,7 @@ public class frmQLSP extends javax.swing.JPanel {
         }
     }
     
-    private void loadDataByDanhMuc(){
+    public static void loadDataByDanhMuc(){
         DefaultTableModel tblModel = (DefaultTableModel)tblSP.getModel();
         tblModel.setRowCount(0);
         
@@ -560,21 +673,23 @@ public class frmQLSP extends javax.swing.JPanel {
         }
     }
     
-    private void loadDanhMucToCBB(){
+    public static void loadDanhMucToCBB(){
         DefaultComboBoxModel cbbModel = new DefaultComboBoxModel();
         for(DanhMuc dm : DanhMucDAO.getAll()){
             cbbModel.addElement(dm);
         }
         cbbDM.setModel(cbbModel);
+        cbbDM.setSelectedIndex(indexCBB);
     }
     
-    private void loadDanhMucToList(){
+    public static void loadDanhMucToList(){
         DefaultListModel<DanhMuc> listModel = new DefaultListModel<>();
             
         for (DanhMuc dm : DanhMucDAO.getAll()) {
             listModel.addElement(dm);     
         }
         listDM.setModel(listModel);
+        listDM.setSelectedIndex(indexCBB);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -586,7 +701,7 @@ public class frmQLSP extends javax.swing.JPanel {
     private javax.swing.JButton btnSearchSP;
     private javax.swing.JButton btnUpdateDM;
     private javax.swing.JButton btnUpdateSP;
-    private javax.swing.JComboBox<DanhMuc> cbbDM;
+    public static javax.swing.JComboBox<DanhMuc> cbbDM;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -602,8 +717,8 @@ public class frmQLSP extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JList<DanhMuc> listDM;
-    private javax.swing.JTable tblSP;
+    public static javax.swing.JList<DanhMuc> listDM;
+    public static javax.swing.JTable tblSP;
     private javax.swing.JTextField txtGia;
     private javax.swing.JTextField txtMSP;
     private javax.swing.JTextField txtNCC;

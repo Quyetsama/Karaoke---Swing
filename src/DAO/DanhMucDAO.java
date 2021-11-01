@@ -26,7 +26,7 @@ public class DanhMucDAO {
         ResultSet rs = null;
         
         try {
-            String sql = "SELECT * FROM DanhMuc";
+            String sql = "SELECT * FROM DanhMuc ORDER BY ID ASC";
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {                
@@ -49,5 +49,98 @@ public class DanhMucDAO {
         }
         
         return listDM;
+    }
+    
+    public static boolean insertDanhMuc(String tendm){
+        boolean result = false;
+        
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        PreparedStatement ps = null;
+        try {
+            String sql = "insert into DanhMuc values (null, '"+ tendm +"')";
+            ps = conn.prepareStatement(sql);
+            
+            if (ps.executeUpdate() > 0) {
+                result = true;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                ps.close();
+            }               
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
+    
+    public static boolean updateDanhMuc(DanhMuc dm){
+        boolean result = false;
+        
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        PreparedStatement ps = null;
+        try {
+            String sql = "update DanhMuc set TenDanhMuc = '"+ dm.getTendm() +"' where ID = '"+ dm.getId() +"'";
+            ps = conn.prepareStatement(sql);
+            
+            if (ps.executeUpdate() > 0) {
+                result = true;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                ps.close();
+            }               
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
+    
+    public static boolean deleteDanhMuc(String mdm){
+        boolean result = false;
+        
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        PreparedStatement ps = null;
+        try {
+            String sql = "delete from DanhMuc where ID = '"+ mdm +"'";
+            ps = conn.prepareStatement(sql);
+            
+            if (ps.executeUpdate() > 0) {
+                result = true;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                ps.close();
+            }               
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
     }
 }

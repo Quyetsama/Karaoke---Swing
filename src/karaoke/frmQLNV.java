@@ -10,6 +10,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class frmQLNV extends javax.swing.JPanel {
@@ -180,7 +182,7 @@ public class frmQLNV extends javax.swing.JPanel {
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         jLabel8.setText("Tìm kiếm");
 
-        btnSearch.setText("Search");
+        btnSearch.setText("Tìm kiếm");
         btnSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSearchActionPerformed(evt);
@@ -229,7 +231,7 @@ public class frmQLNV extends javax.swing.JPanel {
                         .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 108, Short.MAX_VALUE))
+                .addGap(0, 100, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -480,7 +482,36 @@ public class frmQLNV extends javax.swing.JPanel {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        
+        try{
+            String hoten = txtSearch.getText();
+            if(!hoten.equals("")){
+                List<NhanVien> listNV = NhanVienDAO.searchNhanVien(hoten);
+                if(listNV.size() > 0){
+                    DefaultTableModel tblModel = (DefaultTableModel)tblNhanVien.getModel();
+                    tblModel.setRowCount(0);
+
+                    for(NhanVien nv : listNV){
+                        String mnv = nv.getMnv();
+                        hoten = nv.getHoten();
+                        String gioitinh = nv.getGioitinh() == 0 ? "Nam" : "Nữ";
+                        String tuoi = String.valueOf(nv.getTuoi());
+                        String diachi = nv.getDiachi();
+                        String sdt = nv.getSdt();
+
+                        String tbData[] = {mnv, hoten, gioitinh, tuoi, diachi, sdt};
+
+                        tblModel.addRow(tbData);
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy");
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Vui lòng nhập tên nhân viên cần tìm");
+            }
+        }
+        catch(Exception e){}
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void loadData(){

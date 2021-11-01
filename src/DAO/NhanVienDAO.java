@@ -219,4 +219,37 @@ public class NhanVienDAO {
         
         return result;
     }
+    
+    public static List<NhanVien> searchNhanVien(String tennv){
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        List<NhanVien> listNV = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            String sql = "select * from NhanVien where HoTen like N'%"+ tennv +"%'";
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {                
+                listNV.add(new NhanVien(rs.getString("MaNhanVien"), rs.getString("HoTen"), rs.getInt("GioiTinh"), rs.getInt("Tuoi"), rs.getString("DiaChi"), rs.getString("SDT")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                    ps.close();
+                }
+                if(rs != null){
+                    rs.close();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        return listNV;
+    }
 }
