@@ -115,7 +115,6 @@ public class frmQLNV extends javax.swing.JPanel {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Nhân viên", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 11))); // NOI18N
 
-        rdNam.setBackground(new java.awt.Color(255, 255, 255));
         rdNam.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         rdNam.setText("Nam");
         rdNam.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -124,7 +123,6 @@ public class frmQLNV extends javax.swing.JPanel {
             }
         });
 
-        rdNu.setBackground(new java.awt.Color(255, 255, 255));
         rdNu.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         rdNu.setText("Nữ");
         rdNu.addChangeListener(new javax.swing.event.ChangeListener() {
