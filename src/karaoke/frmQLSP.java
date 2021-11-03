@@ -2,8 +2,10 @@ package karaoke;
 import BUS.DanhMucBUS;
 import BUS.SanPhamBUS;
 import DAO.DanhMucDAO;
+import DAO.NhaCCDAO;
 import DAO.SanPhamDAO;
 import DTO.DanhMuc;
+import DTO.NhaCC;
 import DTO.SanPham;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -27,6 +29,7 @@ public class frmQLSP extends javax.swing.JPanel {
 //        loadData();
         loadDanhMucToCBB();
         loadDanhMucToList();
+        loadNCCToCBB();
         dmSelected = (DanhMuc)cbbDM.getModel().getSelectedItem();
         
         loadDataByDanhMuc();
@@ -61,7 +64,6 @@ public class frmQLSP extends javax.swing.JPanel {
         cbbDM = new javax.swing.JComboBox<>();
         txtSL = new javax.swing.JSpinner();
         txtGia = new javax.swing.JTextField();
-        txtNCC = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         txtSearchSP = new javax.swing.JTextField();
         btnSearchSP = new javax.swing.JButton();
@@ -69,6 +71,7 @@ public class frmQLSP extends javax.swing.JPanel {
         btnUpdateSP = new javax.swing.JButton();
         btnRemoveSP = new javax.swing.JButton();
         btnClearSP = new javax.swing.JButton();
+        cbbNCC = new javax.swing.JComboBox<>();
 
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -282,8 +285,8 @@ public class frmQLSP extends javax.swing.JPanel {
                     .addComponent(cbbDM, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtSL)
                     .addComponent(txtGia)
-                    .addComponent(txtNCC)
-                    .addComponent(txtSearchSP, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtSearchSP, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                    .addComponent(cbbNCC, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(64, 64, 64)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(btnClearSP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -331,7 +334,7 @@ public class frmQLSP extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
-                            .addComponent(txtNCC, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbbNCC, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
@@ -388,7 +391,18 @@ public class frmQLSP extends javax.swing.JPanel {
         
         txtSL.setValue(Integer.parseInt(String.valueOf(model.getValueAt(index, 3))));
         txtGia.setText(model.getValueAt(index, 4).toString());
-        txtNCC.setText(model.getValueAt(index, 5).toString());
+        
+        NhaCC ncc = (NhaCC)model.getValueAt(index, 5);
+
+        int j = 0;
+        while(true){
+            if (cbbNCC.getItemAt(j).toString ().contains (ncc.toString())) 
+            { 
+                cbbNCC.setSelectedIndex(j);
+                break;
+            }
+            j++;
+        }
     }//GEN-LAST:event_tblSPMouseClicked
 
     private void listDMMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listDMMouseClicked
@@ -405,13 +419,13 @@ public class frmQLSP extends javax.swing.JPanel {
         txtTenSP.setText("");
         txtSL.setValue(0);
         txtGia.setText("");
-        txtNCC.setText("");
         
         indexCBB = 0;
         loadData();
         loadDanhMucToCBB();
         loadDanhMucToList();
         dmSelected = null;
+        mspSelected = "";
     }//GEN-LAST:event_btnClearSPActionPerformed
 
     private void btnAddSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddSPActionPerformed
@@ -420,10 +434,12 @@ public class frmQLSP extends javax.swing.JPanel {
         int iddm = 0;
         int sl = (int)txtSL.getValue();
         int dongia = 0;
-        String ncc = txtNCC.getText().trim();
+//        String ncc = txtNCC.getText().trim();
+        NhaCC ncc = (NhaCC)cbbNCC.getModel().getSelectedItem();
+        String mncc = ncc.getMncc();
         
         try{
-            if(!tensp.equals("") && dm != null && !ncc.equals("") && !txtGia.getText().equals("")){   
+            if(!tensp.equals("") && dm != null && !txtGia.getText().equals("")){   
                 iddm = dm.getId();
                 try {
                     dongia = Integer.parseInt(txtGia.getText().trim());
@@ -437,7 +453,7 @@ public class frmQLSP extends javax.swing.JPanel {
                     return;
                 }
 
-                SanPham sp = new SanPham(tensp, iddm, sl, dongia, ncc);
+                SanPham sp = new SanPham(tensp, iddm, sl, dongia, mncc);
                 if(SanPhamBUS.insertSanPham(sp)){
                     JOptionPane.showMessageDialog(null, "Thêm sản phẩm thành công!");
                     loadDataByDanhMuc();
@@ -446,7 +462,6 @@ public class frmQLSP extends javax.swing.JPanel {
                     txtTenSP.setText("");
                     txtSL.setValue(0);
                     txtGia.setText("");
-                    txtNCC.setText("");
                     
                     listDM.setSelectedIndex(cbbDM.getSelectedIndex());
                 }
@@ -473,11 +488,13 @@ public class frmQLSP extends javax.swing.JPanel {
         int iddm = 0;
         int sl = (int)txtSL.getValue();
         int dongia = 0;
-        String ncc = txtNCC.getText().trim();
+        
+        NhaCC ncc = (NhaCC)cbbNCC.getModel().getSelectedItem();
+        String mncc = ncc.getMncc();
         
         try{
             if(!mspSelected.equals("")){
-                if(!tensp.equals("") && dm != null && !ncc.equals("") && !txtGia.getText().equals("")){   
+                if(!tensp.equals("") && dm != null && !txtGia.getText().equals("")){   
                     iddm = dm.getId();
                     try {
                         dongia = Integer.parseInt(txtGia.getText().trim());
@@ -491,7 +508,7 @@ public class frmQLSP extends javax.swing.JPanel {
                         return;
                     }
 
-                    SanPham sp = new SanPham(mspSelected, tensp, iddm, sl, dongia, ncc);
+                    SanPham sp = new SanPham(mspSelected, tensp, iddm, sl, dongia, mncc);
                     if(SanPhamBUS.updateSanPham(sp)){
                         JOptionPane.showMessageDialog(null, "Cập nhật sản phẩm thành công!");
                         loadDataByDanhMuc();
@@ -530,7 +547,6 @@ public class frmQLSP extends javax.swing.JPanel {
                         txtTenSP.setText("");
                         txtSL.setValue(0);
                         txtGia.setText("");
-                        txtNCC.setText("");
                         listDM.setSelectedIndex(cbbDM.getSelectedIndex());
                     }
                     else{
@@ -574,7 +590,6 @@ public class frmQLSP extends javax.swing.JPanel {
                     txtTenSP.setText("");
                     txtSL.setValue(0);
                     txtGia.setText("");
-                    txtNCC.setText("");
 
                     indexCBB = 0;
                     
@@ -642,7 +657,10 @@ public class frmQLSP extends javax.swing.JPanel {
             
             String sl = String.valueOf(sp.getSl());
             String dongia = String.valueOf(sp.getDongia());
-            String ncc = sp.getNcc();
+            
+            String mncc = sp.getMncc();
+            String tenncc = sp.getNcc();
+            NhaCC ncc = new NhaCC(mncc, tenncc);
             Object tbData[] = {msp, tensp, dm, sl, dongia, ncc};
 
             tblModel.addRow(tbData);
@@ -667,7 +685,10 @@ public class frmQLSP extends javax.swing.JPanel {
             
             String sl = String.valueOf(sp.getSl());
             String dongia = String.valueOf(sp.getDongia());
-            String ncc = sp.getNcc();
+            
+            String mncc = sp.getMncc();
+            String tenncc = sp.getNcc();
+            NhaCC ncc = new NhaCC(mncc, tenncc);
             Object tbData[] = {msp, tensp, dm, sl, dongia, ncc};
 
             tblModel.addRow(tbData);
@@ -692,6 +713,15 @@ public class frmQLSP extends javax.swing.JPanel {
         listDM.setModel(listModel);
         listDM.setSelectedIndex(indexCBB);
     }
+    
+    private void loadNCCToCBB(){
+        DefaultComboBoxModel cbbModel = new DefaultComboBoxModel();
+        for(NhaCC ncc : NhaCCDAO.getAll()){
+            cbbModel.addElement(ncc);
+        }
+        cbbNCC.setModel(cbbModel);
+//        cbbNCC.setSelectedIndex(indexCBB);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddDM;
@@ -703,6 +733,7 @@ public class frmQLSP extends javax.swing.JPanel {
     private javax.swing.JButton btnUpdateDM;
     private javax.swing.JButton btnUpdateSP;
     public static javax.swing.JComboBox<DanhMuc> cbbDM;
+    private javax.swing.JComboBox<NhaCC> cbbNCC;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -722,7 +753,6 @@ public class frmQLSP extends javax.swing.JPanel {
     public static javax.swing.JTable tblSP;
     private javax.swing.JTextField txtGia;
     private javax.swing.JTextField txtMSP;
-    private javax.swing.JTextField txtNCC;
     private javax.swing.JSpinner txtSL;
     private javax.swing.JTextField txtSearchSP;
     private javax.swing.JTextField txtTenSP;

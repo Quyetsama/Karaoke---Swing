@@ -10,36 +10,41 @@ package DTO;
  * @author vanqu
  */
 public class SanPham {
-    private String msp, tensp, ncc, tendm;
+    private String msp, tensp, mncc, ncc, tendm;
     int sl, dongia, iddm;
     
     public SanPham(){}
     
-    public SanPham(String msp, String tensp, int iddm, int sl, int dongia, String ncc){
+    public SanPham(String tensp){
+        this.tensp = tensp;
+    }
+    
+    public SanPham(String msp, String tensp, int iddm, int sl, int dongia, String mncc){
         this.msp = msp;
         this.tensp = tensp;
         this.iddm = iddm;
         this.sl = sl;
         this.dongia = dongia;
-        this.ncc = ncc;
+        this.mncc = mncc;
     }
     
-    public SanPham(String msp, String tensp, int iddm, String tendm, int sl, int dongia, String ncc){
+    public SanPham(String msp, String tensp, int iddm, String tendm, int sl, int dongia, String mncc, String ncc){
         this.msp = msp;
         this.tensp = tensp;
         this.iddm = iddm;
         this.tendm = tendm;
         this.sl = sl;
         this.dongia = dongia;
+        this.mncc = mncc;
         this.ncc = ncc;
     }
     
-    public SanPham(String tensp, int iddm, int sl, int dongia, String ncc){
+    public SanPham(String tensp, int iddm, int sl, int dongia, String mncc){
         this.tensp = tensp;
         this.iddm = iddm;
         this.sl = sl;
         this.dongia = dongia;
-        this.ncc = ncc;
+        this.mncc = mncc;
     }
 
     public String getMsp() {
@@ -97,6 +102,15 @@ public class SanPham {
     public void setIddm(int iddm) {
         this.iddm = iddm;
     }
+
+    public String getMncc() {
+        return mncc;
+    }
+
+    public void setMncc(String mncc) {
+        this.mncc = mncc;
+    }
+    
 
     @Override
     public String toString() {

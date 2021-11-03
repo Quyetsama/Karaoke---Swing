@@ -20,6 +20,11 @@ public class NhaCC {
         this.sdt = sdt;
         this.diachi = diachi;
     }
+    
+    public NhaCC(String mncc, String tenncc){
+        this.mncc = mncc;
+        this.tenncc = tenncc;
+    }
 
     public String getMncc() {
         return mncc;

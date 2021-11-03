@@ -1,16 +1,26 @@
 package karaoke;
 
+import BUS.NhaCCBUS;
 import DAO.NhaCCDAO;
+import DAO.SanPhamDAO;
 import DTO.NhaCC;
+import DTO.SanPham;
+import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 
 public class frmQLNCC extends javax.swing.JPanel {
 
+    String mnccSelected = "";
     
     public frmQLNCC() {
         initComponents();
         loadData();
+        
+        txtMNCC.setEnabled(false);
     }
 
 
@@ -80,6 +90,11 @@ public class frmQLNCC extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        tblNCC.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblNCCMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblNCC);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -95,11 +110,6 @@ public class frmQLNCC extends javax.swing.JPanel {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Sản phẩm đã mua", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 11))); // NOI18N
 
-        listSP.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane2.setViewportView(listSP);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -131,14 +141,39 @@ public class frmQLNCC extends javax.swing.JPanel {
         jLabel8.setText("Tìm kiếm");
 
         btnAddNCC.setText("Thêm");
+        btnAddNCC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddNCCActionPerformed(evt);
+            }
+        });
 
         btnUpdateNCC.setText("Sửa");
+        btnUpdateNCC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateNCCActionPerformed(evt);
+            }
+        });
 
         btnRemoveNCC.setText("Xóa");
+        btnRemoveNCC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveNCCActionPerformed(evt);
+            }
+        });
 
         btnClearNCC.setText("Làm mới");
+        btnClearNCC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearNCCActionPerformed(evt);
+            }
+        });
 
         btnSearchNCC.setText("Tìm kiếm");
+        btnSearchNCC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchNCCActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -236,6 +271,159 @@ public class frmQLNCC extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnAddNCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNCCActionPerformed
+        String tenncc = txtTenNCC.getText().trim();
+        String sdt = txtSDT.getText().trim();
+        String diachi = txtDiaChi.getText().trim();
+
+        try{
+            if(!tenncc.equals("") && !sdt.equals("") && !diachi.equals("")){   
+                NhaCC ncc = new NhaCC("", tenncc, sdt, diachi);
+                if(NhaCCBUS.insertNhaCC(ncc)){
+                    JOptionPane.showMessageDialog(null, "Thêm nhà cung cấp thành công!");
+                    loadData();
+                    
+                    txtTenNCC.setText("");
+                    txtSDT.setText("");
+                    txtDiaChi.setText("");
+                    
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Xảy ra lỗi!");
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Vui lòng điền đủ thông tin");
+            }
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Xảy ra lỗi!");
+        }
+    }//GEN-LAST:event_btnAddNCCActionPerformed
+
+    private void tblNCCMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblNCCMouseClicked
+        int index = tblNCC.getSelectedRow();
+        TableModel model = tblNCC.getModel();
+
+        mnccSelected = model.getValueAt(index, 0).toString();
+        txtMNCC.setText(model.getValueAt(index, 0).toString());
+        txtTenNCC.setText(model.getValueAt(index, 1).toString());
+        txtSDT.setText(model.getValueAt(index, 2).toString());
+        txtDiaChi.setText(model.getValueAt(index, 3).toString());
+        
+        DefaultListModel<SanPham> listModel = new DefaultListModel<>();
+            
+        for (SanPham sp : SanPhamDAO.getByNCC(mnccSelected)) {
+            listModel.addElement(sp);     
+        }
+        listSP.setModel(listModel);
+    }//GEN-LAST:event_tblNCCMouseClicked
+
+    private void btnUpdateNCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateNCCActionPerformed
+        String tenncc = txtTenNCC.getText().trim();
+        String sdt = txtSDT.getText().trim();
+        String diachi = txtDiaChi.getText().trim();
+
+        try{
+            if(!mnccSelected.equals("")){
+                if(!tenncc.equals("") && !sdt.equals("") && !diachi.equals("")){   
+                    NhaCC ncc = new NhaCC(mnccSelected, tenncc, sdt, diachi);
+                    if(NhaCCBUS.updateNhaCC(ncc)){
+                        JOptionPane.showMessageDialog(null, "Cập nhật nhà cung cấp thành công!");
+                        loadData();
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Xảy ra lỗi!");
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Vui lòng điền đủ thông tin");
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn một nhà cung cấp cần sửa");
+            }
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Xảy ra lỗi!");
+        }
+    }//GEN-LAST:event_btnUpdateNCCActionPerformed
+
+    private void btnClearNCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearNCCActionPerformed
+        txtMNCC.setText("");
+        txtTenNCC.setText("");
+        txtSDT.setText("");
+        txtDiaChi.setText("");
+        
+        mnccSelected = "";
+        loadData();
+    }//GEN-LAST:event_btnClearNCCActionPerformed
+
+    private void btnRemoveNCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveNCCActionPerformed
+        try{
+            if(!mnccSelected.equals("")){
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                int dialogResult = JOptionPane.showConfirmDialog (null, "Bạn có muốn xóa nhà cung cấp '"+ mnccSelected +"' này không?","Cảnh báo",dialogButton);
+                if(dialogResult == JOptionPane.YES_OPTION){
+                    if(NhaCCBUS.deleteNhaCC(mnccSelected)){
+                        JOptionPane.showMessageDialog(null, "Xóa nhà cung cấp '"+ mnccSelected +"' thành công!");
+                        
+                        txtMNCC.setText("");
+                        txtTenNCC.setText("");
+                        txtSDT.setText("");
+                        txtDiaChi.setText("");
+
+                        mnccSelected = "";
+                        DefaultListModel listModel = (DefaultListModel) listSP.getModel();
+                        listModel.removeAllElements();
+                        
+                        loadData();
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Xảy ra lỗi!");
+                    }
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn một nhà cung cấp cần xóa");
+            }
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Xảy ra lỗi!");
+        }
+    }//GEN-LAST:event_btnRemoveNCCActionPerformed
+
+    private void btnSearchNCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchNCCActionPerformed
+        try{
+            String tenncc = txtSearchNCC.getText();
+            if(!tenncc.equals("")){
+                List<NhaCC> listNCC = NhaCCDAO.searchNhaCC(tenncc);
+                if(listNCC.size() > 0){
+                    DefaultTableModel tblModel = (DefaultTableModel)tblNCC.getModel();
+                    tblModel.setRowCount(0);
+
+                    for(NhaCC ncc : listNCC){
+                        String mncc = ncc.getMncc();
+                        tenncc = ncc.getTenncc();
+                        String sdt = ncc.getSdt();
+                        String diachi = ncc.getDiachi();
+                        
+                        Object tbData[] = {mncc, tenncc, sdt, diachi};
+
+                        tblModel.addRow(tbData);
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy");
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Vui lòng nhập tên nhà cung cấp cần tìm");
+            }
+        }
+        catch(Exception e){}
+    }//GEN-LAST:event_btnSearchNCCActionPerformed
+
     private void loadData(){
         DefaultTableModel tblModel = (DefaultTableModel)tblNCC.getModel();
         tblModel.setRowCount(0);
@@ -269,7 +457,7 @@ public class frmQLNCC extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JList<String> listSP;
+    private javax.swing.JList<SanPham> listSP;
     private javax.swing.JTable tblNCC;
     private javax.swing.JTextField txtDiaChi;
     private javax.swing.JTextField txtMNCC;
