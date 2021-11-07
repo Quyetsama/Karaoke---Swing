@@ -19,6 +19,12 @@ public class SanPham {
         this.tensp = tensp;
     }
     
+    public SanPham(String msp, String tensp, int dongia){
+        this.msp = msp;
+        this.tensp = tensp;
+        this.dongia = dongia;
+    }
+    
     public SanPham(String msp, String tensp, int iddm, int sl, int dongia, String mncc){
         this.msp = msp;
         this.tensp = tensp;
