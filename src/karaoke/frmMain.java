@@ -25,6 +25,7 @@ public class frmMain extends javax.swing.JFrame {
         btnQLNCC = new javax.swing.JButton();
         btnQLHD = new javax.swing.JButton();
         btnQLNV = new javax.swing.JButton();
+        btnBCTK = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -55,7 +56,7 @@ public class frmMain extends javax.swing.JFrame {
         });
 
         btnQLHD.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btnQLHD.setText("Quản lý hóa đơn");
+        btnQLHD.setText("Tạo hóa đơn");
         btnQLHD.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnQLHDActionPerformed(evt);
@@ -67,6 +68,14 @@ public class frmMain extends javax.swing.JFrame {
         btnQLNV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnQLNVActionPerformed(evt);
+            }
+        });
+
+        btnBCTK.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnBCTK.setText("Báo cáo - Thống kê");
+        btnBCTK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBCTKActionPerformed(evt);
             }
         });
 
@@ -82,6 +91,7 @@ public class frmMain extends javax.swing.JFrame {
                 .addGap(35, 35, 35)
                 .addComponent(jLabel2)
                 .addContainerGap(46, Short.MAX_VALUE))
+            .addComponent(btnBCTK, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -89,13 +99,15 @@ public class frmMain extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addComponent(jLabel2)
                 .addGap(29, 29, 29)
+                .addComponent(btnQLHD, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnQLSP, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnQLNCC, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnQLNV, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnQLHD, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnBCTK, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -145,6 +157,13 @@ public class frmMain extends javax.swing.JFrame {
         panelMain.validate();
     }//GEN-LAST:event_btnQLNCCActionPerformed
 
+    private void btnBCTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBCTKActionPerformed
+        childPanel = new frmBCTK();
+        panelMain.removeAll();
+        panelMain.add(childPanel);
+        panelMain.validate();
+    }//GEN-LAST:event_btnBCTKActionPerformed
+
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -179,6 +198,7 @@ public class frmMain extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBCTK;
     private javax.swing.JButton btnQLHD;
     private javax.swing.JButton btnQLNCC;
     private javax.swing.JButton btnQLNV;

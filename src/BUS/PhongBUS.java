@@ -20,4 +20,16 @@ public class PhongBUS {
     public static boolean stopPhong(Phong p){
         return PhongDAO.stopPhong(p);
     }
+    
+    public static boolean insertPhong(String tenp){
+        return PhongDAO.insertPhong(tenp);
+    }
+    
+    public static boolean updatePhong(Phong p){
+        return PhongDAO.updatePhong(p);
+    }
+    
+    public static boolean deletePhong(String id){
+        return PhongDAO.deletePhong(id);
+    }
 }

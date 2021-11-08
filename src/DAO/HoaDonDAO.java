@@ -6,10 +6,13 @@
 package DAO;
 
 import DB.ConnectDB;
+import DTO.DoanhThu;
 import DTO.HoaDon;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -83,5 +86,71 @@ public class HoaDonDAO {
         }
         
         return result;
+    }
+    
+    public static List<DoanhThu> getDoanhThu(int slNgay){
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        List<DoanhThu> listDT = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            String sql = "SELECT DATE(TG) AS NG, SUM(ThanhTien) AS DT FROM HoaDon GROUP BY NG ORDER BY NG DESC LIMIT " + slNgay;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {                
+                listDT.add(new DoanhThu(rs.getDate("NG").toString(), rs.getInt("DT")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                    ps.close();
+                }
+                if(rs != null){
+                    rs.close();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        return listDT;
+    }
+    
+    public static int getDoanhThuHomNay(){
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            String sql = "SELECT SUM(ThanhTien) as DT FROM HoaDon WHERE DATE(TG) = current_date()";
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            if(rs.next()){
+                return rs.getInt("DT");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                    ps.close();
+                }
+                if(rs != null){
+                    rs.close();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        return 0;
     }
 }

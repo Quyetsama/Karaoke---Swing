@@ -1,5 +1,8 @@
 package karaoke;
 
+import DAO.TaiKhoanDAO;
+import javax.swing.JOptionPane;
+
 
 public class frmLogin extends javax.swing.JFrame {
 
@@ -88,17 +91,21 @@ public class frmLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        new frmMain().setVisible(true);
-        this.setVisible(false);
+
+        if(TaiKhoanDAO.Login(txtUsername.getText().trim(), txtPassword.getText().trim())){
+            new frmMain().setVisible(true);
+            this.setVisible(false);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Sai tài khoản hoặc mật khẩu!");
+        }
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {

@@ -27,17 +27,16 @@ import javax.swing.table.TableModel;
 
 public class frmQLHD extends javax.swing.JPanel {
     
-    Phong phongSelected = null;
+    static Phong phongSelected = null;
     int currentIndexList = 0;
     SanPham spSelected = null;
-    int thanhTien = 0;
+    static int thanhTien = 0;
 
     public frmQLHD() {
         initComponents();
         loadPhongToList();
         loadData();
         loadDanhMucToCBB();
-        listPhong.setSelectedIndex(0);
         phongSelected = listPhong.getSelectedValue();
         khongBietDatTenLaGi();
         
@@ -68,9 +67,9 @@ public class frmQLHD extends javax.swing.JPanel {
         btnAddSP = new javax.swing.JButton();
         txtTenSP = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnAdd = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
         btnTTorBD = new javax.swing.JButton();
         txtTien = new javax.swing.JLabel();
         txtTG = new javax.swing.JLabel();
@@ -125,7 +124,7 @@ public class frmQLHD extends javax.swing.JPanel {
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, true, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -196,6 +195,11 @@ public class frmQLHD extends javax.swing.JPanel {
         txtSL.setValue(1);
 
         btnSearch.setText("Tìm kiếm");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
 
         btnAddSP.setText("Thêm");
         btnAddSP.addActionListener(new java.awt.event.ActionListener() {
@@ -242,11 +246,26 @@ public class frmQLHD extends javax.swing.JPanel {
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Phòng", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 11))); // NOI18N
 
-        jButton1.setText("Thêm");
+        btnAdd.setText("Thêm");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Sửa");
+        btnUpdate.setText("Sửa");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("Xóa");
+        btnDelete.setText("Xóa");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -254,11 +273,11 @@ public class frmQLHD extends javax.swing.JPanel {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -266,9 +285,9 @@ public class frmQLHD extends javax.swing.JPanel {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(btnAdd)
+                    .addComponent(btnUpdate)
+                    .addComponent(btnDelete))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
@@ -451,47 +470,120 @@ public class frmQLHD extends javax.swing.JPanel {
     }//GEN-LAST:event_tblSPMouseClicked
 
     private void btnAddSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddSPActionPerformed
-        DefaultTableModel tblModel = (DefaultTableModel)tblHD.getModel();
+        try{
+            DefaultTableModel tblModel = (DefaultTableModel)tblHD.getModel();
         
-        if((int)txtSL.getValue() == 0)
-            return;
-        
-        for(int i = 0; i < tblModel.getRowCount(); i++){
-            if(tblModel.getValueAt(i, 0).equals(spSelected.getMsp())){
-                int slMoi = (int)tblModel.getValueAt(i, 2) + (int)txtSL.getValue();
-                int dongia = slMoi * spSelected.getDongia();
-                
-                if(slMoi <= 0){
-                    thanhTien -= (int)tblModel.getValueAt(i, 2) * spSelected.getDongia();
+            if((int)txtSL.getValue() == 0)
+                return;
+
+            for(int i = 0; i < tblModel.getRowCount(); i++){
+                if(tblModel.getValueAt(i, 0).equals(spSelected.getMsp())){
+                    int slMoi = (int)tblModel.getValueAt(i, 2) + (int)txtSL.getValue();
+                    int dongia = slMoi * spSelected.getDongia();
+
+                    if(slMoi <= 0){
+                        thanhTien -= (int)tblModel.getValueAt(i, 2) * spSelected.getDongia();
+                        txtTien.setText("Thành tiền: " + thanhTien + "đ");
+                        tblModel.removeRow(i);
+                        return;
+                    }
+                    tblModel.setValueAt(slMoi, i, 2);
+                    tblModel.setValueAt(dongia, i, 3);
+                    thanhTien += (int)txtSL.getValue() * spSelected.getDongia();
                     txtTien.setText("Thành tiền: " + thanhTien + "đ");
-                    tblModel.removeRow(i);
                     return;
                 }
-                tblModel.setValueAt(slMoi, i, 2);
-                tblModel.setValueAt(dongia, i, 3);
-                thanhTien += (int)txtSL.getValue() * spSelected.getDongia();
-                txtTien.setText("Thành tiền: " + thanhTien + "đ");
+            }
+
+            String msp = spSelected.getMsp();
+            String tensp = spSelected.getTensp();
+            int dongia = spSelected.getDongia();
+            int sl = (int)txtSL.getValue();
+            if(sl < 0){
                 return;
             }
+            int tongtien = dongia * sl;
+            thanhTien += tongtien;
+            txtTien.setText("Thành tiền: " + thanhTien + "đ");
+            Object tbData[] = {msp, tensp, sl, tongtien};
+
+            tblModel.addRow(tbData);
         }
-        
-        String msp = spSelected.getMsp();
-        String tensp = spSelected.getTensp();
-        int dongia = spSelected.getDongia();
-        int sl = (int)txtSL.getValue();
-        if(sl < 0){
-            return;
+        catch(Exception e){
+            
         }
-        int tongtien = dongia * sl;
-        thanhTien += tongtien;
-        txtTien.setText("Thành tiền: " + thanhTien + "đ");
-        Object tbData[] = {msp, tensp, sl, tongtien};
-        
-        tblModel.addRow(tbData);
     }//GEN-LAST:event_btnAddSPActionPerformed
 
-    private void khongBietDatTenLaGi(){
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         try{
+            String tensp = txtSearch.getText();
+            if(!tensp.equals("")){
+                List<SanPham> listSP = SanPhamDAO.searchSanPham(tensp);
+                if(listSP.size() > 0){
+                    DefaultTableModel tblModel = (DefaultTableModel)tblSP.getModel();
+                    tblModel.setRowCount(0);
+
+                    for(SanPham sp : listSP){
+                        String msp = sp.getMsp();
+                        tensp = sp.getTensp();
+                        String dongia = String.valueOf(sp.getDongia());
+
+                        Object tbData[] = {msp, tensp, dongia};
+
+                        tblModel.addRow(tbData);
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy");
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Vui lòng nhập tên sản phẩm cần tìm");
+            }
+        }
+        catch(Exception e){}
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        new frmAddPhong().setVisible(true);
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        Phong pUpdate = listPhong.getSelectedValue();
+        if(pUpdate != null){
+            new frmUpdatePhong(pUpdate).setVisible(true);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn một phòng!");
+        }
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        Phong pDelete = listPhong.getSelectedValue();
+        if(pDelete != null){
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog (null, "Bạn có muốn xóa '"+ pDelete.getTenphong() +"' này không?","Cảnh báo",dialogButton);
+            if(dialogResult == JOptionPane.YES_OPTION){
+                if(PhongBUS.deletePhong(String.valueOf(pDelete.getId()))){
+                    JOptionPane.showMessageDialog(null, "Xóa '"+ pDelete.getTenphong() +"' thành công!");
+                    
+                    loadPhongToList();
+                    khongBietDatTenLaGi();
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Xảy ra lỗi!");
+                }
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn một phòng!");
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    public static void khongBietDatTenLaGi(){
+        try{
+            phongSelected = listPhong.getSelectedValue();
+
             if(phongSelected.getTrangthai() == 1 && phongSelected.getTimestamp() != null){
                 btnTTorBD.setText("Thanh toán");
                 
@@ -528,7 +620,7 @@ public class frmQLHD extends javax.swing.JPanel {
         }
     }
     
-    private void setPanelEnabled(JPanel panel, Boolean isEnabled) {
+    private static void setPanelEnabled(JPanel panel, Boolean isEnabled) {
         panel.setEnabled(isEnabled);
 
         Component[] components = panel.getComponents();
@@ -541,13 +633,14 @@ public class frmQLHD extends javax.swing.JPanel {
     }
 }
     
-    private void loadPhongToList(){
+    public static void loadPhongToList(){
         DefaultListModel<Phong> listModel = new DefaultListModel<>();
             
         for (Phong p : PhongDAO.getAll()) {
             listModel.addElement(p);     
         }
         listPhong.setModel(listModel);
+        listPhong.setSelectedIndex(0);
     }
     
     private void loadData(){
@@ -597,13 +690,13 @@ public class frmQLHD extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnAddSP;
+    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSearch;
-    private javax.swing.JButton btnTTorBD;
+    public static javax.swing.JButton btnTTorBD;
+    private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox<DanhMuc> cbbDM;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -612,15 +705,15 @@ public class frmQLHD extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JList<Phong> listPhong;
+    public static javax.swing.JList<Phong> listPhong;
     private javax.swing.JPanel panelSP;
-    private javax.swing.JPanel panelThaoTac;
+    private static javax.swing.JPanel panelThaoTac;
     private javax.swing.JTable tblHD;
     private javax.swing.JTable tblSP;
     private javax.swing.JSpinner txtSL;
     private javax.swing.JTextField txtSearch;
-    private javax.swing.JLabel txtTG;
+    private static javax.swing.JLabel txtTG;
     private javax.swing.JTextField txtTenSP;
-    private javax.swing.JLabel txtTien;
+    private static javax.swing.JLabel txtTien;
     // End of variables declaration//GEN-END:variables
 }

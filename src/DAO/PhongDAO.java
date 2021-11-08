@@ -112,4 +112,97 @@ public class PhongDAO {
         
         return result;
     }
+    
+    public static boolean insertPhong(String tenp){
+        boolean result = false;
+        
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        PreparedStatement ps = null;
+        try {
+            String sql = "insert into Phong (ID, TenPhong, TrangThai, TG) values (null, '"+ tenp +"', 0, null)";
+            ps = conn.prepareStatement(sql);
+            
+            if (ps.executeUpdate() > 0) {
+                result = true;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                ps.close();
+            }               
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
+    
+    public static boolean updatePhong(Phong p){
+        boolean result = false;
+        
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        PreparedStatement ps = null;
+        try {
+            String sql = "update Phong set TenPhong = '"+ p.getTenphong() +"' where ID = '"+ p.getId() +"'";
+            ps = conn.prepareStatement(sql);
+            
+            if (ps.executeUpdate() > 0) {
+                result = true;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                ps.close();
+            }               
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
+    
+    public static boolean deletePhong(String id){
+        boolean result = false;
+        
+        ConnectDB myConnection = ConnectDB.getInstance();
+        Connection conn = myConnection.getConnection();
+        PreparedStatement ps = null;
+        try {
+            String sql = "delete from Phong where ID = '"+ id +"'";
+            ps = conn.prepareStatement(sql);
+            
+            if (ps.executeUpdate() > 0) {
+                result = true;
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+            try {
+                if(ps != null){
+                ps.close();
+            }               
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return result;
+    }
 }
